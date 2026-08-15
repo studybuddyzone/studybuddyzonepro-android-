@@ -4,7 +4,6 @@
   "webDir": "www",
   "server": {
     "url": "https://studybuddypro-psi.vercel.app",
-    "cleartext": true,
     "allowNavigation": [
       "*.vercel.app",
       "*.firebaseio.com",
@@ -14,8 +13,5 @@
       "*.payu.in",
       "*.cloudinary.com"
     ]
-  },
-  "android": {
-    "allowMixedContent": true
   }
 }
