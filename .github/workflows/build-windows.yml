@@ -64,19 +64,6 @@ jobs:
           $content = $content.Replace('__PACKAGE_VERSION__', '${{ steps.identity.outputs.pkg_version }}')
           Set-Content -Path $path -Value $content
 
-      - name: DEBUG - show resolved manifest and identity values
-        shell: pwsh
-        run: |
-          Write-Host "===== Resolved identity values (character-by-character safe view) ====="
-          Write-Host ("Name length: " + '${{ steps.identity.outputs.identity_name }}'.Length)
-          Write-Host ("Name       : [" + '${{ steps.identity.outputs.identity_name }}' + "]")
-          Write-Host ("Publisher length: " + '${{ steps.identity.outputs.publisher }}'.Length)
-          Write-Host ("Publisher       : [" + '${{ steps.identity.outputs.publisher }}' + "]")
-          Write-Host ("PublisherDisplay: [" + '${{ steps.identity.outputs.publisher_display }}' + "]")
-          Write-Host ("Version         : [" + '${{ steps.identity.outputs.pkg_version }}' + "]")
-          Write-Host "===== Full manifest content after injection ====="
-          Get-Content -Path "windows/Package.appxmanifest" -Raw | Write-Host
-
       - name: Prepare signing certificate
         id: cert
         shell: pwsh
@@ -105,6 +92,10 @@ jobs:
               -KeyUsage DigitalSignature `
               -FriendlyName "StudyBuddyZone CI Signing (ephemeral)" `
               -CertStoreLocation "Cert:\CurrentUser\My" `
+              -KeyExportPolicy Exportable `
+              -KeyAlgorithm RSA `
+              -KeyLength 2048 `
+              -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" `
               -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
 
             $pfxPassword = [System.Guid]::NewGuid().ToString("N")
