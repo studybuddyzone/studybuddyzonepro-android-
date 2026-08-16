@@ -137,8 +137,15 @@ jobs:
       - name: Build signed MSIX / MSIXBundle
         shell: pwsh
         run: |
+          # Note: only /t:Build is passed (not a chained "Build;_GenerateAppxPackageOnBuild"
+          # target list). When /restore is combined with an explicit target list in the same
+          # invocation, MSBuild resolves the target list BEFORE restore runs, so the private
+          # _GenerateAppxPackageOnBuild target (which only exists after the Windows App SDK
+          # NuGet package's targets are restored) isn't found yet -> MSB4057. Setting
+          # GenerateAppxPackageOnBuild=true is enough; it hooks itself in via AfterTargets="Build"
+          # once the package's .targets file is imported, so it still runs automatically.
           msbuild windows\StudyBuddyZoneWindows.csproj `
-            "/t:Build;_GenerateAppxPackageOnBuild" `
+            /t:Build `
             /p:Configuration=Release `
             /p:Platform=x64 `
             /p:GenerateAppxPackageOnBuild=true `
