@@ -1,0 +1,17 @@
+{
+  "appId": "com.xevrontech.studybuddyzone",
+  "appName": "StudyBuddyZone",
+  "webDir": "www",
+  "server": {
+    "url": "https://studybuddypro-psi.vercel.app",
+    "allowNavigation": [
+      "*.vercel.app",
+      "*.firebaseio.com",
+      "*.firebaseapp.com",
+      "*.googleapis.com",
+      "*.cashfree.com",
+      "*.payu.in",
+      "*.cloudinary.com"
+    ]
+  }
+}
