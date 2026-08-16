@@ -107,6 +107,30 @@ jobs:
           echo "::add-mask::$pfxPassword"
           echo "pfx_password=$pfxPassword" >> $env:GITHUB_OUTPUT
 
+      - name: Import signing certificate into cert store
+        id: import
+        shell: pwsh
+        env:
+          PFX_PATH: ${{ steps.cert.outputs.pfx_path }}
+          PFX_PASSWORD: ${{ steps.cert.outputs.pfx_password }}
+        run: |
+          # MSBuild's MSIX packaging targets (APPX0105/APPX0107) cannot import
+          # a password-protected .pfx file directly via PackageCertificateKeyFile
+          # + PackageCertificatePassword - this is a documented limitation, not
+          # a bug in our cert. Workaround: import the pfx into the current
+          # user's personal cert store ourselves, then reference it by
+          # Thumbprint instead.
+          $securePwd = ConvertTo-SecureString -String $env:PFX_PASSWORD -Force -AsPlainText
+          $imported = Import-PfxCertificate `
+            -FilePath $env:PFX_PATH `
+            -CertStoreLocation Cert:\CurrentUser\My `
+            -Password $securePwd `
+            -Exportable
+
+          $thumbprint = $imported.Thumbprint
+          Write-Host "Imported signing certificate, thumbprint: $thumbprint"
+          echo "thumbprint=$thumbprint" >> $env:GITHUB_OUTPUT
+
       - name: Restore NuGet packages
         run: msbuild windows\StudyBuddyZoneWindows.csproj /t:Restore /p:Configuration=Release /p:Platform=x64
 
@@ -122,8 +146,7 @@ jobs:
             /p:AppxBundlePlatforms="x64" `
             /p:UapAppxPackageBuildMode=StoreUpload `
             /p:AppxPackageSigningEnabled=true `
-            /p:PackageCertificateKeyFile="${{ steps.cert.outputs.pfx_path }}" `
-            /p:PackageCertificatePassword="${{ steps.cert.outputs.pfx_password }}" `
+            /p:PackageCertificateThumbprint="${{ steps.import.outputs.thumbprint }}" `
             /p:AppxPackageDir="${{ github.workspace }}\windows\AppPackages\" `
             /restore
 
