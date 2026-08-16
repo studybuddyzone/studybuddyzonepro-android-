@@ -64,6 +64,19 @@ jobs:
           $content = $content.Replace('__PACKAGE_VERSION__', '${{ steps.identity.outputs.pkg_version }}')
           Set-Content -Path $path -Value $content
 
+      - name: DEBUG - show resolved manifest and identity values
+        shell: pwsh
+        run: |
+          Write-Host "===== Resolved identity values (character-by-character safe view) ====="
+          Write-Host ("Name length: " + '${{ steps.identity.outputs.identity_name }}'.Length)
+          Write-Host ("Name       : [" + '${{ steps.identity.outputs.identity_name }}' + "]")
+          Write-Host ("Publisher length: " + '${{ steps.identity.outputs.publisher }}'.Length)
+          Write-Host ("Publisher       : [" + '${{ steps.identity.outputs.publisher }}' + "]")
+          Write-Host ("PublisherDisplay: [" + '${{ steps.identity.outputs.publisher_display }}' + "]")
+          Write-Host ("Version         : [" + '${{ steps.identity.outputs.pkg_version }}' + "]")
+          Write-Host "===== Full manifest content after injection ====="
+          Get-Content -Path "windows/Package.appxmanifest" -Raw | Write-Host
+
       - name: Prepare signing certificate
         id: cert
         shell: pwsh
