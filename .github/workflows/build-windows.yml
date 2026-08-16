@@ -111,7 +111,7 @@ jobs:
         shell: pwsh
         run: |
           msbuild windows\StudyBuddyZoneWindows.csproj `
-            /t:Build;_GenerateAppxPackageOnBuild `
+            "/t:Build;_GenerateAppxPackageOnBuild" `
             /p:Configuration=Release `
             /p:Platform=x64 `
             /p:GenerateAppxPackageOnBuild=true `
