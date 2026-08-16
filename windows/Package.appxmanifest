@@ -19,7 +19,10 @@
     Publisher="__PACKAGE_PUBLISHER__"
     Version="__PACKAGE_VERSION__" />
 
-  <mp:PhoneIdentity PhoneProductId="00000000-0000-0000-0000-000000000000" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <!-- mp:PhoneIdentity intentionally removed: it's a legacy Windows Phone
+       element, not needed for a WinUI3 Desktop app, and its placeholder
+       all-zero GUIDs were causing MakeAppx to reject the manifest as
+       invalid (error 0x80080204). -->
 
   <Properties>
     <DisplayName>StudyBuddyZone</DisplayName>
